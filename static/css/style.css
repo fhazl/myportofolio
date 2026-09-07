@@ -21,7 +21,7 @@ body {
     line-height: 1.6;
 }
 
-h1, .brand {
+h2, h3, .brand {
     font-family: "Space Grotesk", -apple-system, sans-serif;
 }
 
@@ -61,7 +61,7 @@ h1, .brand {
 }
 
 .hero {
-    padding: 4.5rem 0 5rem;
+    padding: 4rem 0 5rem;
 }
 
 .hero-grid {
@@ -90,7 +90,7 @@ h1, .brand {
     margin-bottom: 0.75rem;
 }
 
-.hero-identity h1 {
+.hero-identity h3 {
     font-size: clamp(3rem, 7vw, 5rem);
     line-height: 0.95;
 }
@@ -167,6 +167,62 @@ h1, .brand {
     object-fit: cover;
     border-radius: var(--radius);
     border: 3px solid var(--ink);
+}
+
+.skill {
+    padding: 4.5rem 0 5rem;
+}
+
+.skill-header {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 2.5rem;
+    text-align: center;
+}
+
+.skill-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    justify-content: center;
+    gap: 2rem;
+}
+
+.skill-card {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    padding: 1.5rem 2rem;
+    border-radius: var(--radius);
+    transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 3s ease;
+    will-change: transform;
+}
+
+.skill-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 10px 20px rgba(28, 25, 23, 0.08);
+    background-color: var(--paper);
+    border: 1px solid var(--line);
+}
+
+.skill-icon {
+    width: 90px;
+    height: 90px;
+    object-fit: contain;
+    flex-shrink: 0;
+    border-radius: 12px;
+    background-color: rgba(0, 0, 0, 0.1);
+    filter: drop-shadow(0 4px 8px rgba(28, 25, 23, 0.15));
+}
+
+.skill-card h3 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--ink);
+    margin: 0;
+    text-align: left;
 }
 
 .site-footer {
