@@ -147,6 +147,10 @@ h2, h3, .brand {
     position: relative;
 }
 
+.hero-photo:hover {
+    background-color: var(--accent);
+}
+
 .photo-block {
     position: absolute;
     top: 1.25rem;
@@ -196,12 +200,13 @@ h2, h3, .brand {
     gap: 1.5rem;
     padding: 1.5rem 2rem;
     border-radius: var(--radius);
-    transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 3s ease;
+    background-color: rgba(0, 0, 0, 0.01);
+    transition: transform 3s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 3s ease;
     will-change: transform;
 }
 
 .skill-card:hover {
-    transform: translateY(-6px);
+    transform: translateY(-6px) rotate(-360deg);
     box-shadow: 0 10px 20px rgba(28, 25, 23, 0.08);
     background-color: var(--paper);
     border: 1px solid var(--line);
@@ -215,6 +220,11 @@ h2, h3, .brand {
     border-radius: 12px;
     background-color: rgba(0, 0, 0, 0.1);
     filter: drop-shadow(0 4px 8px rgba(28, 25, 23, 0.15));
+    transition: transform 0.5s ease;
+}
+
+.skill-card:hover .skill-icon {
+  transform: scale(1.1) rotate(360deg);
 }
 
 .skill-card h3 {
@@ -223,6 +233,11 @@ h2, h3, .brand {
     color: var(--ink);
     margin: 0;
     text-align: left;
+    transition: transform 1s ease;
+}
+
+.skill-card:hover h3 {
+    transform: scale(1.5) rotate(1800deg);
 }
 
 .site-footer {
