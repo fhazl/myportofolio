@@ -21,32 +21,41 @@
         </div>
     </header>
 
-    <main>
-        <section class="experience-section" id="experience">
+      <section class="education-section" id="education">
             <div class="container">
-                <p class="section-kicker">My journey so far</p>
-                <h1>Experience</h1>
+                <p class="section-kicker">Where I've studied</p>
+                <h1>Education</h1>
 
-                <div class="experience-grid">
-                    {% for experience in experience_list %}
-                        <article class="experience-card">
-                            <span class="experience-category">
-                                {{ experience.get_category_display }}
+                <div class="education-grid">
+                    {% for education in education_list %}
+                        <article class="education-card">
+                            {% if education.thumbnail %}
+                                <img src="{{ education.thumbnail }}" alt="{{ education.institution }} logo" style="max-height: 40px; margin-bottom: 0.75rem; display: block;">
+                            {% endif %}
+
+                            <span class="education-degree">
+                                {{ education.get_degree_display }}
                             </span>
-                            <h2>{{ experience.title }}</h2>
-                            <p class="experience-description">
-                                {{ experience.description }}
+                            
+                            <h2>{{ education.field_of_study }}</h2>
+                            
+                            <p class="education-institution">
+                                {{ education.institution }}
+                            </p>
+                            
+                            <p class="education-description">
+                                {{ education.description|linebreaksbr }}
                             </p>
 
-                            {% if experience.is_ongoing %}
-                                <p class="experience-status">Ongoing</p>
+                            {% if education.is_ongoing %}
+                                <p class="education-status">Ongoing</p>
                             {% else %}
-                                <p class="experience-status">Completed</p>
+                                <p class="education-status">Completed</p>
                             {% endif %}
                         </article>
                     {% empty %}
                         <p class="empty-state">
-                            No experience has been added yet.
+                            No education has been added yet.
                         </p>
                     {% endfor %}
                 </div>
