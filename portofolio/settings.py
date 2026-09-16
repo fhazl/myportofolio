@@ -137,3 +137,6 @@ MAILERS = {
         'BACKEND': 'django.core.mail.backends.console.EmailBackend',
     },
 }
+
+# Trusted Websites
+CSRF_TRUSTED_ORIGINS = ["https://fernando-hazel-myportofolio.pws.cs.ui.ac.id/"]
