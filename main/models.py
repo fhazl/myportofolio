@@ -4,20 +4,10 @@ from django.db import models
 
 
 class Experience(models.Model):
-    EXPERIENCE_CHOICES = [
-        ("internship", "Internship"),
-        ("research", "Research"),
-        ("volunteer", "Volunteer"),
-        ("part-time", "Part-Time"),
-        ("full-time", "Full-Time"),
-        ("freelance", "Freelance"),
-        ("organization", "Organization"),
-    ]
-
+    category = models.CharField(max_length=255)
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=255)
     description = models.TextField()
-    category = models.CharField(max_length=20, choices=EXPERIENCE_CHOICES, default="full-time")
     thumbnail = models.URLField(blank=True, null=True)
     started_at = models.DateField()
     ended_at = models.DateField(blank=True, null=True)
@@ -31,14 +21,9 @@ class Experience(models.Model):
 
 
 class Education(models.Model):
-    DEGREE_CHOICES = [
-        ("high-school", "High School"),
-        ("bachelor", "Bachelor's Degree"),
-    ]
-
+    degree = models.CharField(max_length=255)
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     institution = models.CharField(max_length=255)
-    degree = models.CharField(max_length=20, choices=DEGREE_CHOICES, default="bachelor")
     field_of_study = models.CharField(max_length=255)
     description = models.TextField(blank=True)
     thumbnail = models.URLField(blank=True, null=True)

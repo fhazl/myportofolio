@@ -1,45 +1,70 @@
-  {% extends 'base.html' %}
-  {% block content %}
+{% extends "base.html" %}
+{% block meta %}
+    <title>Education - {{ name }}</title>
+{% endblock meta %}
+{% block content %}
     <main>
-        <section class="education-section" id="education">
+        <section class="experience-section" id="education">
             <div class="container">
-                <p class="section-kicker">Where I've studied</p>
-                <h1>Education</h1>
-
-                <div class="education-grid">
+                <p class="section-kicker">My academic background</p>
+                <div class="project-header">
+                    <h1>Education</h1>
+                    <a href="{% url 'main:create_education' %}"
+                       class="button project-add-button">
+                        <span aria-hidden="true">+</span>
+                        Add Education
+                    </a>
+                </div>
+                <form method="get"
+                      action="{% url 'main:show_education' %}"
+                      class="project-search">
+                    <input type="search"
+                           name="degree"
+                           value="{{ degree_query }}"
+                           placeholder="Search by degree name"
+                           class="project-search__input"
+                           aria-label="Search by degree name">
+                    <button type="submit" class="button">Search</button>
+                </form>
+                <div class="experience-grid project-grid">
                     {% for education in education_list %}
-                        <article class="education-card">
+                        <article class="experience-card">
                             {% if education.thumbnail %}
-                                <img src="{{ education.thumbnail }}" alt="{{ education.institution }} logo" style="max-height: 40px; margin-bottom: 0.75rem; display: block;">
+                                <img src="{{ education.thumbnail }}"
+                                     alt="{{ education.institution }} Thumbnail"
+                                     class="project-image">
                             {% endif %}
-
-                            <span class="education-degree">
-                                {{ education.get_degree_display }}
-                            </span>
+                            <h2>{{ education.degree }}</h2>
+                            <span class="experience-category">{{ education.field_of_study }} at {{ education.institution }}</span>
                             
-                            <h2>{{ education.field_of_study }}</h2>
-                            
-                            <p class="education-institution">
-                                {{ education.institution }}
-                            </p>
-                            
-                            <p class="education-description">
-                                {{ education.description|linebreaksbr }}
+                            <p class="experience-date">
+                                {{ education.started_at|date:"M Y" }} - 
+                                {% if education.is_ongoing %}
+                                    Present
+                                {% else %}
+                                    {{ education.ended_at|date:"M Y" }}
+                                {% endif %}
                             </p>
 
-                            {% if education.is_ongoing %}
-                                <p class="education-status">Ongoing</p>
-                            {% else %}
-                                <p class="education-status">Completed</p>
-                            {% endif %}
+                            <p class="experience-description">{{ education.description }}</p>
+                            <div class="project-card-actions">
+                                <div class="project-actions">
+                                    <a href="{% url 'main:update_education' education.id %}" class="button button-secondary">
+                                        Edit
+                                    </a>
+                                    {% include "components/education_delete_modal.html" with education=education %}
+                                </div>
+                            </div>
                         </article>
                     {% empty %}
-                        <p class="empty-state">
-                            No education has been added yet.
-                        </p>
+                        {% if degree_query %}
+                            <p class="empty-state">No education records found matching that degree.</p>
+                        {% else %}
+                            <p class="empty-state">No education records have been added yet.</p>
+                        {% endif %}
                     {% endfor %}
                 </div>
             </div>
         </section>
     </main>
-  {% endblock content %}
+{% endblock content %}

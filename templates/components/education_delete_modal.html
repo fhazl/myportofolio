@@ -1,40 +1,38 @@
-<p class="experience-status">
-    <button type="button"
-            class="button button-danger"
-            popovertarget="delete-project-{{ project.id }}"
-            aria-label="Delete {{ project.title }}"
-            title="Delete project">
-        Delete Project
-    </button>
-</p>
-<div id="delete-project-{{ project.id }}"
+<button type="button"
+        class="button button-danger"
+        popovertarget="delete-education-{{ education.id }}"
+        aria-label="Delete {{ education.institution }}"
+        title="Delete education">
+    Delete Education
+</button>
+<div id="delete-education-{{ education.id }}"
      class="project-delete-modal"
      popover="auto"
      role="dialog"
      aria-modal="true"
-     aria-labelledby="delete-project-title-{{ project.id }}">
+     aria-labelledby="delete-education-title-{{ education.id }}">
     <button type="button"
             class="project-delete-modal__backdrop"
-            popovertarget="delete-project-{{ project.id }}"
+            popovertarget="delete-education-{{ education.id }}"
             popovertargetaction="hide"
             aria-label="Close delete confirmation"></button>
     <div class="project-delete-modal__content">
         <button type="button"
                 class="project-delete-modal__close"
-                popovertarget="delete-project-{{ project.id }}"
+                popovertarget="delete-education-{{ education.id }}"
                 popovertargetaction="hide"
                 aria-label="Close delete confirmation">×</button>
-        <h2 id="delete-project-title-{{ project.id }}">Delete Project?</h2>
+        <h2 id="delete-education-title-{{ education.id }}">Delete Education?</h2>
         <p>
-            Are you sure you would like to delete the project
-            <strong>{{ project.title }}</strong>? This action cannot be undone.
+            Are you sure you would like to delete the education
+            <strong>{{ education.institution }}</strong>? This action cannot be undone.
         </p>
         <div class="project-delete-modal__actions">
             <button type="button"
                     class="button button-secondary"
-                    popovertarget="delete-project-{{ project.id }}"
+                    popovertarget="delete-education-{{ education.id }}"
                     popovertargetaction="hide">Cancel</button>
-            <form method="post" action="{% url 'main:delete_project' project.id %}">
+            <form method="post" action="{% url 'main:delete_education' education.id %}">
                 {% csrf_token %}
                 <button type="submit" class="button button-danger">Delete</button>
             </form>
