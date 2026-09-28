@@ -16,12 +16,12 @@ from django.core.exceptions import PermissionDenied
 def show_main(request):
     last_login = request.COOKIES.get('last_login', 'No active login session / Cookie not found')
     context = {
-        "name": "Burhan",
-        "npm": "2206000000",
+        "name": "Fernando Hazel",
+        "npm": "2506587195",
         "study_program": "S1 Ilmu Komputer",
         "bio": (
             "Mahasiswa Ilmu Komputer Universitas Indonesia yang tertarik "
-            "pada pengembangan perangkat lunak dan pendidikan."
+            "pada pengembangan perangkat lunak dan keamanan siber."
         ),
         "last_login": last_login,
     }
@@ -200,7 +200,7 @@ def register(request):
         return redirect("main:login")
 
     context = {
-        "name": "Burhan",
+        "name": "Fernando Hazel",
         "form": form,
     }
     return render(request, "register.html", context)
@@ -216,7 +216,7 @@ def login_user(request):
         return response
 
     context = {
-        "name": "Burhan",
+        "name": "Fernando Hazel",
         "form": form,
     }
     return render(request, "login.html", context)
