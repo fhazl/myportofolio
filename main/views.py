@@ -4,16 +4,17 @@ from main.forms import ProjectForm, ExperienceForm, EducationForm
 
 from django.contrib import messages
 from django.core import serializers
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseNotAllowed
 
 from main.permissions import owner_required, editor_or_owner_required
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 import datetime
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import PermissionDenied
 
+# ==========================================
 # AUTHENTICATION VIEWS
+# ==========================================
 
 def register(request):
     form = UserCreationForm(request.POST or None)
@@ -51,7 +52,10 @@ def logout_user(request):
     response.delete_cookie('last_login')
     return response
 
+# ==========================================
 # MAIN VIEW
+# ==========================================
+
 def show_main(request):
     last_login = request.COOKIES.get('last_login', 'No active login session / Cookie not found')
     context = {
@@ -67,7 +71,9 @@ def show_main(request):
     return render(request, "index.html", context)
 
 
+# ==========================================
 # PROJECT VIEWS
+# ==========================================
 
 @owner_required
 def create_project(request):
@@ -93,10 +99,10 @@ def update_project(request, project_id):
     return render(request, "projects_form.html", context)
 
 def show_projects(request):
-    json_response = get_projects_json(request)
-    projects = serializers.deserialize("json", json_response.content.decode("utf-8"))
-    projects = [project.object for project in projects]
     title_query = request.GET.get("title", "").strip()
+    projects = Project.objects.all()
+    if title_query:
+        projects = projects.filter(title__icontains=title_query)
 
     context = {
         "name": "Fernando Hazel",
@@ -107,9 +113,6 @@ def show_projects(request):
 
 @owner_required
 def delete_project(request, project_id):
-    if not request.user.is_superuser:
-        raise PermissionDenied
-    
     project = get_object_or_404(Project, pk=project_id)
     if request.method == "POST":
         project.delete()
@@ -121,10 +124,29 @@ def get_projects_json(request):
     projects = Project.objects.all()
     if title_query:
         projects = projects.filter(title__icontains=title_query)
-    projects_json = serializers.serialize("json", projects, use_natural_foreign_keys=True)
+    
+    projects_json = serializers.serialize(
+        "json", 
+        projects, 
+        fields=('id', 'title', 'description', 'tech_stack', 'project_url', 'project_image_url')
+    )
     return HttpResponse(projects_json, content_type="application/json")
 
+@login_required(login_url="/login/")
+def toggle_star_project(request, project_id):
+    if request.method != "POST":
+        return HttpResponseNotAllowed(["POST"])
+    project = get_object_or_404(Project, pk=project_id)
+    if project.starred_by.filter(pk=request.user.pk).exists():
+        project.starred_by.remove(request.user)
+    else:
+        project.starred_by.add(request.user)
+    return redirect("main:show_projects")
+
+
+# ==========================================
 # EXPERIENCE VIEWS
+# ==========================================
 
 @owner_required
 def create_experience(request):
@@ -150,10 +172,10 @@ def update_experience(request, experience_id):
     return render(request, "experience_form.html", context)
 
 def show_experience(request):
-    json_response = get_experience_json(request)
-    experiences = serializers.deserialize("json", json_response.content.decode("utf-8"))
-    experiences = [exp.object for exp in experiences]
     title_query = request.GET.get("title", "").strip()
+    experiences = Experience.objects.all()
+    if title_query:
+        experiences = experiences.filter(title__icontains=title_query)
 
     context = {
         "name": "Fernando Hazel",
@@ -175,10 +197,29 @@ def get_experience_json(request):
     experiences = Experience.objects.all()
     if title_query:
         experiences = experiences.filter(title__icontains=title_query)
-    experiences_json = serializers.serialize("json", experiences)
+        
+    experiences_json = serializers.serialize(
+        "json", 
+        experiences, 
+        fields=('id', 'category', 'title', 'description', 'thumbnail', 'started_at', 'ended_at')
+    )
     return HttpResponse(experiences_json, content_type="application/json")
 
+@login_required(login_url="/login/")
+def toggle_star_experience(request, experience_id):
+    if request.method != "POST":
+        return HttpResponseNotAllowed(["POST"])
+    experience = get_object_or_404(Experience, pk=experience_id)
+    if experience.starred_by.filter(pk=request.user.pk).exists():
+        experience.starred_by.remove(request.user)
+    else:
+        experience.starred_by.add(request.user)
+    return redirect("main:show_experience")
+
+
+# ==========================================
 # EDUCATION VIEWS
+# ==========================================
 
 @owner_required
 def create_education(request):
@@ -204,10 +245,10 @@ def update_education(request, education_id):
     return render(request, "education_form.html", context)
 
 def show_education(request):
-    json_response = get_education_json(request)
-    educations = serializers.deserialize("json", json_response.content.decode("utf-8"))
-    educations = [edu.object for edu in educations]
     degree_query = request.GET.get("degree", "").strip()
+    educations = Education.objects.all()
+    if degree_query:
+        educations = educations.filter(degree__icontains=degree_query)
 
     context = {
         "name": "Fernando Hazel",
@@ -229,17 +270,21 @@ def get_education_json(request):
     educations = Education.objects.all()
     if degree_query:
         educations = educations.filter(degree__icontains=degree_query)
-    educations_json = serializers.serialize("json", educations)
+        
+    educations_json = serializers.serialize(
+        "json", 
+        educations, 
+        fields=('id', 'degree', 'institution', 'field_of_study', 'description', 'thumbnail', 'started_at', 'ended_at')
+    )
     return HttpResponse(educations_json, content_type="application/json")
 
 @login_required(login_url="/login/")
-def toggle_star(request, project_id):
-    project = get_object_or_404(Project, pk=project_id)
-
-    if request.method == "POST":
-        if project.starred_by.filter(pk=request.user.pk).exists():
-            project.starred_by.remove(request.user)
-        else:
-            project.starred_by.add(request.user)
-
-    return redirect("main:show_projects")
+def toggle_star_education(request, education_id):
+    if request.method != "POST":
+        return HttpResponseNotAllowed(["POST"])
+    education = get_object_or_404(Education, pk=education_id)
+    if education.starred_by.filter(pk=request.user.pk).exists():
+        education.starred_by.remove(request.user)
+    else:
+        education.starred_by.add(request.user)
+    return redirect("main:show_education")

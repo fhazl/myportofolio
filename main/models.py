@@ -1,8 +1,6 @@
 import uuid
-
 from django.db import models
 from django.contrib.auth.models import User
-
 
 class Experience(models.Model):
     category = models.CharField(max_length=255)
@@ -12,6 +10,9 @@ class Experience(models.Model):
     thumbnail = models.URLField(blank=True, null=True)
     started_at = models.DateField()
     ended_at = models.DateField(blank=True, null=True)
+    starred_by = models.ManyToManyField(
+        User, related_name="starred_experiences", blank=True
+    )
 
     def __str__(self):
         return self.title
@@ -30,6 +31,9 @@ class Education(models.Model):
     thumbnail = models.URLField(blank=True, null=True)
     started_at = models.DateField()
     ended_at = models.DateField(blank=True, null=True)
+    starred_by = models.ManyToManyField(
+        User, related_name="starred_educations", blank=True
+    )
 
     def __str__(self):
         return f"{self.degree} in {self.field_of_study} - {self.institution}"
@@ -37,6 +41,7 @@ class Education(models.Model):
     @property
     def is_ongoing(self):
         return self.ended_at is None
+
 
 class Project(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
