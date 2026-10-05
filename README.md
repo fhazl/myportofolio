@@ -38,6 +38,20 @@ Serialization is needed because it makes Python database objects easier to under
 2. Authentication is the process of verifying who a user is (e.g., checking credentials at the login screen). Authorization is the process of verifying what that user is allowed to do based on their assigned roles (e.g., checking if an authenticated user has permission to delete an object).
 3. Hiding buttons in the HTML template only updates the visual user interface. A user can easily bypass this by sending direct HTTP requests to your view URLs using browser console scripts or API tools. Server-side checks are mandatory because they act as the actual security boundary, validating the user's role on the backend server before executing any database changes.
 
+### Week 5 Logs
+
+- Converted education and experience pages to load their data with fetch() from JSON endpoints instead of rendering it in the template.
+- Added loading, empty, and error states to each list page.
+- Added debounced AJAX search so results update without reloading the page.
+- Added modal forms and AJAX POST views for adding education, experience, and project data, with server-side role checks and CSRF tokens.
+- Added toast notifications for successful and failed submissions, including validation errors from the server.
+- Added escapeHtml in the JavaScript and strip_tags in the clean_<field> methods to prevent XSS.
+
+### Assignment 5
+1. Debouncing delays a search request until the user stops typing, which avoids sending a request on every keystroke and overloading the server.
+2. await makes the code wait for fetch() to finish and return the real response; without it, we would only get a pending Promise and the page would render before the data arrives.
+3. XSS is an attack where malicious JavaScript is injected into a page, and AJAX data is more vulnerable because Django templates auto-escape text while innerHTML in JavaScript does not.
+
 ### AI Disclosure & Tool History Log
-- AI Collaborator: ChatGPT (OpenAI GPT-4o architecture model)
+- AI Collaborator: ChatGPT (OpenAI GPT-4o architecture model), Claude (Sonnet 5.5 Medium)
 - Interaction Summary Log: Shared localized script layers (views.py, models.py, urls.py) directly with the assistant engine alongside explicit project constraints. Used iterative troubleshooting logs to resolve migration errors, syntax conflicts, and data structure bugs step-by-step.

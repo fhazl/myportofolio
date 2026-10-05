@@ -188,14 +188,11 @@ def update_experience(request, experience_id):
 
 def show_experience(request):
     title_query = request.GET.get("title", "").strip()
-    experiences = Experience.objects.all()
-    if title_query:
-        experiences = experiences.filter(title__icontains=title_query)
 
     context = {
         "name": "Fernando Hazel",
-        "experience_list": experiences,
         "title_query": title_query,
+        "form": ExperienceForm(),
     }
     return render(request, "experience.html", context)
 
@@ -209,16 +206,56 @@ def delete_experience(request, experience_id):
 
 def get_experience_json(request):
     title_query = request.GET.get("title", "").strip()
-    experiences = Experience.objects.all()
+    experiences = Experience.objects.prefetch_related("starred_by").order_by("-started_at")
+
     if title_query:
         experiences = experiences.filter(title__icontains=title_query)
-        
-    experiences_json = serializers.serialize(
-        "json", 
-        experiences, 
-        fields=('id', 'category', 'title', 'description', 'thumbnail', 'started_at', 'ended_at')
-    )
-    return HttpResponse(experiences_json, content_type="application/json")
+
+    # Konstruksi data JSON secara manual agar bisa menyisipkan logika Star
+    data = []
+    for experience in experiences:
+        starred_users = list(experience.starred_by.all())
+        is_starred = (
+            request.user.is_authenticated
+            and any(u.pk == request.user.pk for u in starred_users)
+        )
+
+        data.append({
+            "pk": str(experience.id),
+            "fields": {
+                "category": experience.category,
+                "title": experience.title,
+                "description": experience.description,
+                "thumbnail": experience.thumbnail or "",
+                "started_at": experience.started_at.isoformat(),
+                "ended_at": experience.ended_at.isoformat() if experience.ended_at else None,
+                "is_ongoing": experience.is_ongoing,
+                "star_count": len(starred_users),
+                "is_starred": is_starred,
+                "starred_by_names": ", ".join(u.username for u in starred_users),
+            },
+        })
+
+    return JsonResponse(data, safe=False)
+
+
+@require_POST
+def create_experience_ajax(request):
+    if not request.user.is_superuser:
+        return JsonResponse(
+            {"message": "Only the portfolio owner can add experience records."},
+            status=403,
+        )
+
+    form = ExperienceForm(request.POST)
+    if form.is_valid():
+        experience = form.save()
+        return JsonResponse(
+            {"message": "Experience added successfully.", "pk": str(experience.id)},
+            status=201,
+        )
+
+    return JsonResponse({"errors": form.errors.get_json_data()}, status=400)
 
 @login_required(login_url="/login/")
 def toggle_star_experience(request, experience_id):
@@ -261,14 +298,11 @@ def update_education(request, education_id):
 
 def show_education(request):
     degree_query = request.GET.get("degree", "").strip()
-    educations = Education.objects.all()
-    if degree_query:
-        educations = educations.filter(degree__icontains=degree_query)
 
     context = {
         "name": "Fernando Hazel",
-        "education_list": educations,
         "degree_query": degree_query,
+        "form": EducationForm(),
     }
     return render(request, "education.html", context)
 
@@ -282,16 +316,56 @@ def delete_education(request, education_id):
 
 def get_education_json(request):
     degree_query = request.GET.get("degree", "").strip()
-    educations = Education.objects.all()
+    educations = Education.objects.prefetch_related("starred_by").order_by("-started_at")
+
     if degree_query:
         educations = educations.filter(degree__icontains=degree_query)
-        
-    educations_json = serializers.serialize(
-        "json", 
-        educations, 
-        fields=('id', 'degree', 'institution', 'field_of_study', 'description', 'thumbnail', 'started_at', 'ended_at')
-    )
-    return HttpResponse(educations_json, content_type="application/json")
+
+    data = []
+    for education in educations:
+        starred_users = list(education.starred_by.all())
+        is_starred = (
+            request.user.is_authenticated
+            and any(u.pk == request.user.pk for u in starred_users)
+        )
+
+        data.append({
+            "pk": str(education.id),
+            "fields": {
+                "degree": education.degree,
+                "institution": education.institution,
+                "field_of_study": education.field_of_study,
+                "description": education.description,
+                "thumbnail": education.thumbnail or "",
+                "started_at": education.started_at.isoformat(),
+                "ended_at": education.ended_at.isoformat() if education.ended_at else None,
+                "is_ongoing": education.is_ongoing,
+                "star_count": len(starred_users),
+                "is_starred": is_starred,
+                "starred_by_names": ", ".join(u.username for u in starred_users),
+            },
+        })
+
+    return JsonResponse(data, safe=False)
+
+
+@require_POST
+def create_education_ajax(request):
+    if not request.user.is_superuser:
+        return JsonResponse(
+            {"message": "Only the portfolio owner can add education records."},
+            status=403,
+        )
+
+    form = EducationForm(request.POST)
+    if form.is_valid():
+        education = form.save()
+        return JsonResponse(
+            {"message": "Education added successfully.", "pk": str(education.id)},
+            status=201,
+        )
+
+    return JsonResponse({"errors": form.errors.get_json_data()}, status=400)
 
 @login_required(login_url="/login/")
 def toggle_star_education(request, education_id):
@@ -308,7 +382,7 @@ def toggle_star_education(request, education_id):
 def create_project_ajax(request):
     if not request.user.is_superuser:
         return JsonResponse(
-            {"message": "Hanya pemilik portofolio yang dapat menambahkan proyek."},
+            {"message": "Only the portfolio owner can add project records."},
             status=403,
         )
 
@@ -316,7 +390,7 @@ def create_project_ajax(request):
     if form.is_valid():
         project = form.save()
         return JsonResponse(
-            {"message": "Proyek berhasil ditambahkan.", "pk": str(project.id)},
+            {"message": "Project added successfully.", "pk": str(project.id)},
             status=201,
         )
 

@@ -55,7 +55,7 @@ class ProjectForm(ModelForm):
     def clean_title(self):
         title = strip_tags(self.cleaned_data["title"]).strip()
         if not title:
-            raise ValidationError("Nama proyek tidak boleh hanya berisi tag HTML.")
+            raise ValidationError("Project name cannot consist only of HTML tags.")
         return title
 
     def clean_tech_stack(self):
@@ -110,16 +110,36 @@ class ExperienceForm(ModelForm):
                 }
             ),
             "started_at": DateInput(
+                format="%Y-%m-%d",
                 attrs={
                     "type": "date",
                 }
             ),
             "ended_at": DateInput(
+                format="%Y-%m-%d",
                 attrs={
                     "type": "date",
                 }
             ),
         }
+
+    def clean_category(self):
+        category = strip_tags(self.cleaned_data["category"]).strip()
+        if not category:
+            raise ValidationError("Category cannot consist only of HTML tags.")
+        return category
+
+    def clean_title(self):
+        title = strip_tags(self.cleaned_data["title"]).strip()
+        if not title:
+            raise ValidationError("Job title cannot consist only of HTML tags.")
+        return title
+
+    def clean_description(self):
+        description = strip_tags(self.cleaned_data["description"]).strip()
+        if not description:
+            raise ValidationError("Job description cannot consist only of HTML tags.")
+        return description
 
 class EducationForm(ModelForm):
     class Meta:
@@ -178,3 +198,23 @@ class EducationForm(ModelForm):
                 }
             ),
         }
+    def clean_degree(self):
+        degree = strip_tags(self.cleaned_data["degree"]).strip()
+        if not degree:
+            raise ValidationError("Degree cannot consist only of HTML tags.")
+        return degree
+
+    def clean_institution(self):
+        institution = strip_tags(self.cleaned_data["institution"]).strip()
+        if not institution:
+            raise ValidationError("Institution cannot consist only of HTML tags.")
+        return institution
+
+    def clean_field_of_study(self):
+        field_of_study = strip_tags(self.cleaned_data["field_of_study"]).strip()
+        if not field_of_study:
+            raise ValidationError("Field of study cannot consist only of HTML tags.")
+        return field_of_study
+
+    def clean_description(self):
+        return strip_tags(self.cleaned_data["description"]).strip()

@@ -46,46 +46,6 @@
 
                 <!-- Project Grid -->
                 <div id="grid" class="experience-grid project-grid hide"></div>
-                <div class="experience-grid project-grid">
-                    {% for project in project_list %}
-                        <article class="experience-card">
-                            {% if project.project_image_url %}
-                                <img src="{{ project.project_image_url }}"
-                                     alt="{{ project.title }} Image"
-                                     class="project-image">
-                            {% endif %}
-                            <h2>{{ project.title }}</h2>
-                            <span class="experience-category">{{ project.tech_stack }}</span>
-                            <p class="experience-description">{{ project.description }}</p>
-                            
-                            {% if user.is_authenticated %}
-                                {% include "components/project_star.html" with project=project %}
-                            {% endif %}
-
-                            <div class="project-card-actions">
-                                <div class="project-actions">
-                                    {% if project.project_url %}
-                                        <a href="{{ project.project_url }}" class="button">View Project</a>
-                                    {% endif %}
-                                    {% if user.is_superuser or is_editor %}
-                                        <a href="{% url 'main:update_project' project.id %}" class="button button-secondary">
-                                            Edit
-                                        </a>
-                                    {% endif %}
-                                    {% if user.is_superuser %}
-                                        {% include "components/project_delete_modal.html" with project=project %}
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </article>
-                    {% empty %}
-                        {% if title_query %}
-                            <p class="empty-state">No projects found matching that name.</p>
-                        {% else %}
-                            <p class="empty-state">No projects have been added yet.</p>
-                        {% endif %}
-                    {% endfor %}
-                </div>
             </div>
         </section>
     </main>

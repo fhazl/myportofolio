@@ -1,10 +1,9 @@
 from django.urls import path
-from . import views
 from main.views import (
     show_main,
-    show_projects, create_project, update_project, delete_project, get_projects_json, toggle_star_project,
-    show_experience, create_experience, update_experience, delete_experience, get_experience_json, toggle_star_experience,
-    show_education, create_education, update_education, delete_education, get_education_json, toggle_star_education,
+    show_projects, create_project, update_project, delete_project, get_projects_json, toggle_star_project, create_project_ajax,
+    show_experience, create_experience, update_experience, delete_experience, get_experience_json, toggle_star_experience, create_experience_ajax,
+        show_education, create_education, update_education, delete_education, get_education_json, toggle_star_education, create_education_ajax,
     register, login_user, logout_user
 )
 
@@ -20,7 +19,7 @@ urlpatterns = [
     path("projects/<uuid:project_id>/delete/", delete_project, name="delete_project"),
     path("projects/<uuid:project_id>/star/", toggle_star_project, name="toggle_star_project"),
     path("api/projects/", get_projects_json, name="get_projects_json"),
-    path('create-project-ajax/', views.create_project_ajax, name='create_project_ajax'),
+    path('create-project-ajax/', create_project_ajax, name='create_project_ajax'),
     
     # Experience Paths
     path("experience/", show_experience, name="show_experience"),
@@ -29,6 +28,7 @@ urlpatterns = [
     path("experience/<uuid:experience_id>/delete/", delete_experience, name="delete_experience"),
     path("experience/<uuid:experience_id>/star/", toggle_star_experience, name="toggle_star_experience"),
     path("api/experience/", get_experience_json, name="get_experience_json"),
+    path("experience/add-ajax/", create_experience_ajax, name="create_experience_ajax"),
     
     # Education Paths
     path("education/", show_education, name="show_education"),
@@ -37,6 +37,7 @@ urlpatterns = [
     path("education/<uuid:education_id>/delete/", delete_education, name="delete_education"),
     path("education/<uuid:education_id>/star/", toggle_star_education, name="toggle_star_education"),
     path("api/education/", get_education_json, name="get_education_json"),
+    path("education/add-ajax/", create_education_ajax, name="create_education_ajax"),
 
     # Authentication Paths
     path("register/", register, name="register"),
