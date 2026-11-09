@@ -1,28 +1,26 @@
 {% extends "base.html" %}
 {% block meta %}
-    <title>Projects - {{ name }}</title>
+    <title>Projects</title>
 {% endblock meta %}
 {% block content %}
     <main>
-        <section class="experience-section" id="experience">
+        <section class="experience-section" id="projects">
             <div class="container">
                 <p class="section-kicker">Works that I have built</p>
                 <div class="project-header">
                     <h1>Projects</h1>
-                    {% if user.is_superuser %}
-                        <button type="button"
-                                class="button project-add-button"
-                                popovertarget="add-project-modal">
-                            <span aria-hidden="true">+</span>
-                            Add Project
-                        </button>
-                    {% endif %}
+                    <button type="button"
+                            id="add-project-button"
+                            class="button project-add-button hide"
+                            popovertarget="add-project-modal">
+                        <span aria-hidden="true">+</span>
+                        Add Project
+                    </button>
                 </div>
                 <form id="project-search-form" class="project-search">
                     <input type="search"
                            id="search-input"
                            name="title"
-                           value="{{ title_query }}"
                            placeholder="Search by project name"
                            class="project-search__input"
                            aria-label="Search by project name">
@@ -30,37 +28,115 @@
                 </form>
 
                 <!-- Loading State -->
-                <div id="loading" class="empty-state hide">
+                <div id="loading" class="empty-state hide" role="status" aria-live="polite">
                     <p>Loading Projects...</p>
                 </div>
 
                 <!-- Error State -->
-                <div id="error" class="empty-state hide">
+                <div id="error" class="empty-state hide" role="status" aria-live="polite">
                     <p>Failed to load projects. Please try again.</p>
                 </div>
 
                 <!-- Empty State -->
-                <div id="empty" class="empty-state hide">
-                    <p>No work experiences have been added or found.</p>
+                <div id="empty" class="empty-state hide" role="status" aria-live="polite">
+                    <p>No projects have been added or found.</p>
                 </div>
 
                 <!-- Project Grid -->
                 <div id="grid" class="experience-grid project-grid hide"></div>
+                <noscript><p>This page needs JavaScript to load projects.</p></noscript>
             </div>
         </section>
     </main>
 
-    {% if user.is_superuser %}
-        {% include "components/project_form_modal.html" %}
-    {% endif %}
-    
-    {% csrf_token %}
+    <div id="add-project-modal" class="project-form-modal" popover="auto" role="dialog"
+        aria-modal="true" aria-labelledby="add-project-modal-title">
+        <button type="button" class="project-form-modal__backdrop"
+                popovertarget="add-project-modal" popovertargetaction="hide"
+                aria-label="Close add form"></button>
+        <div class="project-form-modal__content">
+            <button type="button" class="project-form-modal__close"
+                    popovertarget="add-project-modal" popovertargetaction="hide"
+                    aria-label="Close add form">×</button>
+            <h2 id="add-project-modal-title">Add Project</h2>
+            <form id="project-form" class="project-form">
+                <div class="form-group"><label for="add-title">Project Name</label>
+                    <input type="text" id="add-title" name="title" maxlength="255" placeholder="Website Portofolio" required></div>
+                <div class="form-group"><label for="add-description">Project Description</label>
+                    <textarea id="add-description" name="description" rows="3" placeholder="Describe your project here.." required></textarea></div>
+                <div class="form-group"><label for="add-tech_stack">Technologies Used</label>
+                    <input type="text" id="add-tech_stack" name="tech_stack" maxlength="255" placeholder="Django, Python, HTML, CSS" required></div>
+                <div class="form-group"><label for="add-project_url">Project URL</label>
+                    <input type="url" id="add-project_url" name="project_url"></div>
+                <div class="form-group"><label for="add-project_image_url">Project Image URL</label>
+                    <input type="url" id="add-project_image_url" name="project_image_url" maxlength="500"></div>
+                <div class="project-form-modal__actions">
+                    <button type="button" class="button button-secondary"
+                            popovertarget="add-project-modal" popovertargetaction="hide">Cancel</button>
+                    <button type="submit" class="button">Add Project</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="edit-project-modal" class="project-form-modal" popover="auto" role="dialog"
+        aria-modal="true" aria-labelledby="edit-project-modal-title">
+        <button type="button" class="project-form-modal__backdrop"
+                popovertarget="edit-project-modal" popovertargetaction="hide"
+                aria-label="Close edit form"></button>
+        <div class="project-form-modal__content">
+            <button type="button" class="project-form-modal__close"
+                    popovertarget="edit-project-modal" popovertargetaction="hide"
+                    aria-label="Close edit form">×</button>
+            <h2 id="edit-project-modal-title">Edit Project</h2>
+            <form id="project-edit-form" class="project-form">
+                <div class="form-group"><label for="edit-title">Project Name</label>
+                    <input type="text" id="edit-title" name="title" maxlength="255" required></div>
+                <div class="form-group"><label for="edit-description">Project Description</label>
+                    <textarea id="edit-description" name="description" rows="3" required></textarea></div>
+                <div class="form-group"><label for="edit-tech_stack">Technologies Used</label>
+                    <input type="text" id="edit-tech_stack" name="tech_stack" maxlength="255" required></div>
+                <div class="form-group"><label for="edit-project_url">Project URL</label>
+                    <input type="url" id="edit-project_url" name="project_url"></div>
+                <div class="form-group"><label for="edit-project_image_url">Project Image URL</label>
+                    <input type="url" id="edit-project_image_url" name="project_image_url" maxlength="500"></div>
+                <div class="project-form-modal__actions">
+                    <button type="button" class="button button-secondary"
+                            popovertarget="edit-project-modal" popovertargetaction="hide">Cancel</button>
+                    <button type="submit" class="button">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="delete-project-modal" class="project-delete-modal" popover="auto" role="dialog"
+        aria-modal="true" aria-labelledby="delete-project-modal-title">
+        <button type="button" class="project-delete-modal__backdrop"
+                popovertarget="delete-project-modal" popovertargetaction="hide"
+                aria-label="Close delete confirmation"></button>
+        <div class="project-delete-modal__content">
+            <button type="button" class="project-delete-modal__close"
+                    popovertarget="delete-project-modal" popovertargetaction="hide"
+                    aria-label="Close delete confirmation">×</button>
+            <h2 id="delete-project-modal-title">Delete Project?</h2>
+            <p>Are you sure you would like to delete <strong id="delete-project-name"></strong>?
+            This action cannot be undone.</p>
+            <div class="project-delete-modal__actions">
+                <button type="button" class="button button-secondary"
+                        popovertarget="delete-project-modal" popovertargetaction="hide">Cancel</button>
+                <button type="button" id="confirm-delete-project" class="button button-danger">Delete</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-    const BASE_PROJECTS_ENDPOINT = "{% url 'api:project-list' %}";
-    const DETAIL_PROJECT_ENDPOINT = "{% url 'api:project-detail' '00000000-0000-0000-0000-000000000000' %}";
-    const STAR_PROJECT_ENDPOINT = "{% url 'api:project-star' '00000000-0000-0000-0000-000000000000' %}";
-    const IS_SUPERUSER = "{{ user.is_superuser|yesno:'true,false' }}" === "true";
-    const IS_AUTHENTICATED = "{{ user.is_authenticated|yesno:'true,false' }}" === "true";
+    const LIST_ENDPOINT = '/api/v1/projects/';
+    const DETAIL_ENDPOINT = '/api/v1/projects/{id}/';
+    const STAR_ENDPOINT = '/api/v1/projects/{id}/star/';
+    const ME_ENDPOINT = '/api/v1/me/';
+    const LOGIN_URL = '/login/';
+    let IS_SUPERUSER = false, IS_EDITOR = false, IS_AUTHENTICATED = false;
+    const FIELDS = ['title', 'description', 'tech_stack', 'project_url', 'project_image_url'];
 
     const loadingState = document.getElementById('loading');
     const errorState = document.getElementById('error');
@@ -68,9 +144,9 @@
     const gridContainer = document.getElementById('grid');
     const searchForm = document.getElementById('project-search-form');
     const searchInput = document.getElementById('search-input');
-    const projectForm = document.getElementById('project-form');
-    let projectsAbortController;
-    let searchDebounceTimer;
+    const addForm = document.getElementById('project-form');
+    const editForm = document.getElementById('project-edit-form');
+    let abortController, searchDebounceTimer, editingId = null, pendingDeleteId = null, itemsById = {};
 
     function getCookie(name) {
         const prefix = `${name}=`;
@@ -85,8 +161,28 @@
             .replaceAll('"', '&quot;').replaceAll("'", '&#39;');
     }
 
-    function projectEndpoint(pattern, id) {
-        return pattern.replace('00000000-0000-0000-0000-000000000000', id);
+    function endpoint(template, id) {
+        return template.replace('{id}', encodeURIComponent(id));
+    }
+
+    async function loadCurrentUser() {
+        try {
+            const response = await fetch(ME_ENDPOINT, {
+                headers: { Accept: 'application/json' },
+                credentials: 'same-origin',
+            });
+            if (!response.ok) return;
+            const me = await response.json();
+            IS_AUTHENTICATED = Boolean(me.is_authenticated);
+            IS_SUPERUSER = Boolean(me.is_superuser);
+            IS_EDITOR = Boolean(me.is_editor);
+        } catch (error) {
+            console.error('Error loading current user:', error);
+        }
+    }
+
+    function applyRoleVisibility() {
+        document.getElementById('add-project-button').classList.toggle('hide', !IS_SUPERUSER);
     }
 
     function displayPageSection({ showLoading = false, showError = false,
@@ -97,43 +193,53 @@
         gridContainer.classList.toggle('hide', !showGrid);
     }
 
+    function starTitle(project) {
+        return project.starred_by_names ? `Starred by: ${project.starred_by_names}` : 'No stars yet';
+    }
+
     function buildProjectCardElement(project) {
         const article = document.createElement('article');
         article.className = 'experience-card';
+        const id = escapeHtml(project.id);
         const image = project.project_image_url
             ? `<img src="${escapeHtml(project.project_image_url)}" alt="${escapeHtml(project.title)}" class="project-image">` : '';
         const link = project.project_url
             ? `<a href="${escapeHtml(project.project_url)}" class="button">Open project</a>` : '';
         const star = IS_AUTHENTICATED
             ? `<button type="button" class="button button-star${project.is_starred ? ' is-starred' : ''}"
-                data-action="star" data-id="${escapeHtml(project.id)}"
-                title="${escapeHtml(project.starred_by_names)}">
-                ${project.is_starred ? 'Unstar' : 'Star'} (${project.star_count})</button>`
-            : `<a href="{% url 'main:login' %}" class="button">Login to star (${project.star_count})</a>`;
+                data-action="star" data-id="${id}" title="${escapeHtml(starTitle(project))}">
+                <span aria-hidden="true">★</span>
+                <span class="star-label">${project.is_starred ? 'Unstar' : 'Star'}</span>
+                <span class="star-count">${escapeHtml(project.star_count)}</span></button>`
+            : `<a href="${LOGIN_URL}" class="button">Login to star (${escapeHtml(project.star_count)})</a>`;
+        const edit = (IS_SUPERUSER || IS_EDITOR)
+            ? `<button type="button" class="button button-secondary" data-action="edit" data-id="${id}">Edit</button>` : '';
         const remove = IS_SUPERUSER
-            ? `<button type="button" class="button button-danger" data-action="delete"
-                data-id="${escapeHtml(project.id)}">Delete</button>` : '';
+            ? `<button type="button" class="button button-danger" data-action="delete" data-id="${id}">Delete</button>` : '';
         article.innerHTML = `${image}<h2>${escapeHtml(project.title)}</h2>
             <span class="experience-category">${escapeHtml(project.tech_stack)}</span>
             <p class="experience-description">${escapeHtml(project.description)}</p>
             <div class="project-card-actions"><div class="project-actions">
-            ${link}${star}${remove}</div></div>`;
+            ${link}${star}${edit}${remove}</div></div>`;
         return article;
     }
 
     async function fetchProjects(searchQuery = '') {
-        if (projectsAbortController) projectsAbortController.abort();
-        projectsAbortController = new AbortController();
+        if (abortController) abortController.abort();
+        abortController = new AbortController();
         try {
             displayPageSection({ showLoading: true });
-            const url = new URL(BASE_PROJECTS_ENDPOINT, window.location.origin);
+            history.replaceState(null, '', searchQuery ? `?title=${encodeURIComponent(searchQuery)}` : window.location.pathname);
+            const url = new URL(LIST_ENDPOINT, window.location.origin);
             if (searchQuery) url.searchParams.set('title', searchQuery);
             const response = await fetch(url, {
                 headers: { Accept: 'application/json' },
-                signal: projectsAbortController.signal,
+                credentials: 'same-origin',
+                signal: abortController.signal,
             });
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
             const projects = await response.json();
+            itemsById = Object.fromEntries(projects.map(p => [p.id, p]));
             gridContainer.replaceChildren(...projects.map(buildProjectCardElement));
             displayPageSection({ showGrid: projects.length > 0, showEmpty: projects.length === 0 });
         } catch (error) {
@@ -144,17 +250,23 @@
     }
 
     function apiErrorMessage(data, status) {
-        const messages = Object.values(data).flat().filter(value => typeof value === 'string');
-        return messages.join(' ') || `Request failed (HTTP ${status}).`;
+        const parts = [];
+        Object.entries(data || {}).forEach(([key, value]) => {
+            const msgs = (Array.isArray(value) ? value : [value]).filter(v => typeof v === 'string');
+            if (!msgs.length) return;
+            parts.push(key === 'detail' || key === 'non_field_errors' ? msgs.join(' ') : `${key}: ${msgs.join(' ')}`);
+        });
+        return parts.join(' ') || `Request failed (HTTP ${status}).`;
     }
 
-    async function writeProject(url, method, payload) {
+    async function writeApi(url, method, payload) {
         const response = await fetch(url, {
             method,
+            credentials: 'same-origin',
             headers: {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
-                'X-CSRFToken': getCookie('csrftoken'),
+                'X-CSRFToken': getCookie('csrftoken') ?? '',
             },
             body: payload === undefined ? undefined : JSON.stringify(payload),
         });
@@ -164,45 +276,85 @@
         return data;
     }
 
-    async function addProject(event) {
+    function formPayload(form, names) {
+        const payload = {};
+        names.forEach(n => { payload[n] = form.elements[n].value; });
+        return payload;
+    }
+
+    // ADD
+    if (addForm) addForm.addEventListener('submit', async function(event) {
         event.preventDefault();
-        const button = projectForm.querySelector('button[type="submit"]');
-        button.disabled = true;
+        const btn = addForm.querySelector('button[type="submit"]');
+        btn.disabled = true;
         try {
-            const fields = new FormData(projectForm);
-            const payload = Object.fromEntries([
-                'title', 'description', 'tech_stack', 'project_url', 'project_image_url',
-            ].map(name => [name, fields.get(name)]));
-            await writeProject(BASE_PROJECTS_ENDPOINT, 'POST', payload);
-            projectForm.reset();
+            await writeApi(LIST_ENDPOINT, 'POST', formPayload(addForm, FIELDS));
+            addForm.reset();
             document.getElementById('add-project-modal').hidePopover();
             showToast('Success', 'Project created.', 'success');
             await fetchProjects(searchInput.value.trim());
-        } catch (error) {
-            showToast('Could not create project', error.message, 'error');
-        } finally {
-            button.disabled = false;
-        }
-    }
+        } catch (e) {
+            showToast('Could not create project', e.message, 'error');
+        } finally { btn.disabled = false; }
+    });
 
-    if (projectForm) projectForm.addEventListener('submit', addProject);
+    // EDIT (PATCH)
+    if (editForm) editForm.addEventListener('submit', async function(event) {
+        event.preventDefault();
+        const btn = editForm.querySelector('button[type="submit"]');
+        btn.disabled = true;
+        try {
+            await writeApi(endpoint(DETAIL_ENDPOINT, editingId), 'PATCH', formPayload(editForm, FIELDS));
+            document.getElementById('edit-project-modal').hidePopover();
+            showToast('Success', 'Project updated.', 'success');
+            await fetchProjects(searchInput.value.trim());
+        } catch (e) {
+            showToast('Could not update project', e.message, 'error');
+        } finally { btn.disabled = false; }
+    });
 
+    // DELETE
+    const confirmDeleteBtn = document.getElementById('confirm-delete-project');
+    if (confirmDeleteBtn) confirmDeleteBtn.addEventListener('click', async function() {
+        confirmDeleteBtn.disabled = true;
+        try {
+            await writeApi(endpoint(DETAIL_ENDPOINT, pendingDeleteId), 'DELETE');
+            document.getElementById('delete-project-modal').hidePopover();
+            showToast('Success', 'Project deleted.', 'success');
+            await fetchProjects(searchInput.value.trim());
+        } catch (e) {
+            document.getElementById('delete-project-modal').hidePopover();
+            showToast('Could not delete project', e.message, 'error');
+        } finally { confirmDeleteBtn.disabled = false; }
+    });
+
+    // CARD ACTIONS
     gridContainer.addEventListener('click', async function(event) {
         const button = event.target.closest('button[data-action]');
         if (!button || button.disabled) return;
+        const id = button.dataset.id;
         const action = button.dataset.action;
-        if (action === 'delete' && !window.confirm('Delete this project?')) return;
-        button.disabled = true;
-        try {
-            const pattern = action === 'star' ? STAR_PROJECT_ENDPOINT : DETAIL_PROJECT_ENDPOINT;
-            await writeProject(projectEndpoint(pattern, button.dataset.id),
-                action === 'star' ? 'POST' : 'DELETE');
-            showToast('Success', action === 'star' ? 'Star updated.' : 'Project deleted.', 'success');
-            await fetchProjects(searchInput.value.trim());
-        } catch (error) {
-            showToast('Request failed', error.message, 'error');
-        } finally {
-            button.disabled = false;
+
+        if (action === 'edit') {
+            editingId = id;
+            FIELDS.forEach(n => { editForm.elements[n].value = itemsById[id][n] ?? ''; });
+            document.getElementById('edit-project-modal').showPopover();
+        } else if (action === 'delete') {
+            pendingDeleteId = id;
+            document.getElementById('delete-project-name').textContent = itemsById[id].title;
+            document.getElementById('delete-project-modal').showPopover();
+        } else if (action === 'star') {
+            button.disabled = true;
+            try {
+                const data = await writeApi(endpoint(STAR_ENDPOINT, id), 'POST');
+                itemsById[id] = data;
+                button.classList.toggle('is-starred', data.is_starred);
+                button.querySelector('.star-label').textContent = data.is_starred ? 'Unstar' : 'Star';
+                button.querySelector('.star-count').textContent = data.star_count;
+                button.title = starTitle(data);
+            } catch (e) {
+                showToast('Failed to update star', e.message, 'error');
+            } finally { button.disabled = false; }
         }
     });
 
@@ -215,6 +367,11 @@
         clearTimeout(searchDebounceTimer);
         fetchProjects(searchInput.value.trim());
     });
-    fetchProjects(searchInput.value.trim());
+
+    searchInput.value = new URLSearchParams(window.location.search).get('title') ?? '';
+    loadCurrentUser().then(() => {
+        applyRoleVisibility();
+        fetchProjects(searchInput.value.trim());
+    });
     </script>
 {% endblock content %}
