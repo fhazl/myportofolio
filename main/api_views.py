@@ -4,7 +4,7 @@ from rest_framework.authentication import SessionAuthentication
 from rest_framework.decorators import (
     api_view, authentication_classes, permission_classes,
 )
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
 from main.models import Project, Experience, Education
@@ -15,6 +15,20 @@ from main.serializers import (
     ProjectSerializer, ExperienceSerializer, EducationSerializer,
 )
 
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from main.permissions import IsPortfolioOwnerOrEditorOrReadOnly, is_editor
+
+@api_view(["GET"])
+@authentication_classes([SessionAuthentication])
+@permission_classes([AllowAny])
+def me(request):
+    user = request.user
+    return Response({
+        "is_authenticated": user.is_authenticated,
+        "is_superuser": user.is_authenticated and user.is_superuser,
+        "is_editor": is_editor(user),
+        "username": user.username if user.is_authenticated else None,
+    })
 
 def _list(request, model, serializer_class, search_param, order_by=("-started_at", "id")):
     if request.method in ("GET", "HEAD"):
