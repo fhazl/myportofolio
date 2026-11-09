@@ -8,7 +8,7 @@ class ProjectAdmin(admin.ModelAdmin):
 
 @admin.register(Experience)
 class ExperienceAdmin(admin.ModelAdmin):
-    list_display = ('title', 'category', 'started_at', 'get_status', 'thumbnail') # Added 'category' back!
+    list_display = ('title', 'category', 'started_at', 'get_status', 'thumbnail')
     search_fields = ('title', 'description', 'category')
 
     @admin.display(description="End Date / Status")

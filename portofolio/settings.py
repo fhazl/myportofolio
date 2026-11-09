@@ -142,4 +142,4 @@ MAILERS = {
 }
 
 # Trusted Websites
-CSRF_TRUSTED_ORIGINS = ["https://fernando-hazel-myportofolio.pws.cs.ui.ac.id/"]
+CSRF_TRUSTED_ORIGINS = ["https://fernando-hazel-myportofolio.pws.cs.ui.ac.id"]

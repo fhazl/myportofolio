@@ -40,6 +40,8 @@ class IsPortfolioOwnerOrReadOnly(BasePermission):
         )
 
 class IsPortfolioOwnerOrEditorOrReadOnly(BasePermission):
+    message = "You do not have permission to perform this action."
+    
     def has_permission(self, request, view):
         if request.method in SAFE_METHODS:
             return True
@@ -49,5 +51,5 @@ class IsPortfolioOwnerOrEditorOrReadOnly(BasePermission):
             return True
         return (
             request.method in ("PUT", "PATCH")
-            and request.user.groups.filter(name="Editor").exists()
+            and is_editor(request.user)
         )
