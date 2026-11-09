@@ -18,7 +18,7 @@ class ProjectSerializer(serializers.ModelSerializer):
             return _clean_required(v, "Title")
 
     def validate_description(self, v):
-        return _clean_required(v, "Description")
+        return strip_tags(v).strip()
 
     def validate_tech_stack(self, v):
         return _clean_required(v, "Technologies")
@@ -29,7 +29,7 @@ class StarFieldsMixin(serializers.Serializer):
     starred_by_names = serializers.SerializerMethodField()
 
     def get_star_count(self, obj):
-        return len(obj.starred_by.all())
+        return obj.starred_by.count()
 
     def get_is_starred(self, obj):
         request = self.context.get("request")
@@ -76,7 +76,7 @@ class ExperienceSerializer(StarFieldsMixin, serializers.ModelSerializer):
         return _clean_required(v, "Title")
 
     def validate_description(self, v):
-        return _clean_required(v, "Description")
+        return strip_tags(v).strip()
 
 
 class EducationSerializer(StarFieldsMixin, serializers.ModelSerializer):
