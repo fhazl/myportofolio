@@ -11,7 +11,7 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 import datetime
 from django.contrib.auth.decorators import login_required
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_POST, ensure_csrf_cookie
 
 # ==========================================
 # AUTHENTICATION VIEWS
@@ -99,6 +99,7 @@ def update_project(request, project_id):
     context = {"name": "Fernando Hazel", "form": form, "is_update": True}
     return render(request, "projects_form.html", context)
 
+@ensure_csrf_cookie
 def show_projects(request):
     title_query = request.GET.get("title", "").strip()
 
@@ -186,6 +187,7 @@ def update_experience(request, experience_id):
     context = {"name": "Fernando Hazel", "form": form, "is_update": True}
     return render(request, "experience_form.html", context)
 
+@ensure_csrf_cookie
 def show_experience(request):
     title_query = request.GET.get("title", "").strip()
 
@@ -296,6 +298,7 @@ def update_education(request, education_id):
     context = {"name": "Fernando Hazel", "form": form, "is_update": True}
     return render(request, "education_form.html", context)
 
+@ensure_csrf_cookie
 def show_education(request):
     degree_query = request.GET.get("degree", "").strip()
 
