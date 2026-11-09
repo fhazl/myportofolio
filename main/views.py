@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 import datetime
-from django.views.decorators.http import ensure_csrf_cookie
+from django.views.decorators.csrf import ensure_csrf_cookie
 
 # ==========================================
 # AUTHENTICATION VIEWS

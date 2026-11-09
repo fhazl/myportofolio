@@ -1,9 +1,9 @@
 from django.urls import path
 from main.views import (
     show_main,
-    show_projects, create_project, update_project, delete_project, get_projects_json, toggle_star_project, create_project_ajax,
-    show_experience, create_experience, update_experience, delete_experience, get_experience_json, toggle_star_experience, create_experience_ajax,
-        show_education, create_education, update_education, delete_education, get_education_json, toggle_star_education, create_education_ajax,
+    show_projects,
+    show_experience,
+    show_education,
     register, login_user, logout_user
 )
 
